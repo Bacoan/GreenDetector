@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Detector Syariah - Cek Fakta ESG Emiten & CWLS Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;850&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+            colors: {
+              brand: { 50: "#ecfdf5", 100: "#d1fae5", 500: "#10b981", 600: "#059669", 700: "#047857", 900: "#064e3b" },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="font-sans text-slate-800 antialiased bg-slate-50 flex flex-col min-h-screen">
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm py-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <div class="flex items-center cursor-pointer group" onclick="switchView('home')">
+          <div class="flex -space-x-2 mr-3">
+            <div class="bg-emerald-600 p-2 rounded-full z-10 border-2 border-white shadow-md"><i data-lucide="shield" class="w-5 h-5 text-white"></i></div>
+            <div class="bg-blue-900 p-2 rounded-full border-2 border-white shadow-md"><i data-lucide="leaf" class="w-5 h-5 text-white"></i></div>
+          </div>
+          <div>
+            <span class="font-bold text-xl text-blue-900">Green Detector</span>
+            <span class="font-bold text-xl text-emerald-600"> Syariah</span>
+          </div>
+        </div>
+        <div class="hidden md:flex space-x-3 items-center">
+          <button onclick="switchView('home')" id="nav-home" class="px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20">Beranda</button>
+          <button onclick="switchView('search')" id="nav-search" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200">Cari Emiten</button>
+          <button onclick="switchView('methodology')" id="nav-methodology" class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200">Metodologi</button>
+        </div>
+        <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+          <button onclick="setUserMode('Ritel')" id="mode-ritel" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-blue-900 text-white shadow-md">Ritel</button>
+          <button onclick="setUserMode('Analis')" id="mode-analis" class="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-600">Analis</button>
+          <button onclick="setUserMode('Regulator')" id="mode-regulator" class="px-3 py-1.5 text-xs font-bold rounded-xl text-slate-600">Regulator</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow">
+      <!-- VIEW: HOME -->
+      <div id="view-home" class="view-section">
+        <div class="relative bg-gradient-to-br from-emerald-700 via-teal-900 to-blue-950 text-white overflow-hidden py-24 md:py-32">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8 backdrop-blur-sm text-xs font-bold text-emerald-50 uppercase"> Prototipe KTI 2026 • UIN Jakarta </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 tracking-tight">Dari Klaim ke Bukti.<br /><span class="text-emerald-400">Cek Fakta ESG</span> Emiten.</h1>
+            <p class="text-lg md:text-xl text-emerald-50/90 mb-10 max-w-2xl mx-auto">Platform intelijen berbasis triangulasi data untuk mendeteksi greenwashing, memverifikasi realisasi CSR, dan optimalisasi instrumen CWLS.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+              <button
+                onclick="switchView('search')"
+                class="bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 px-8 py-4 rounded-2xl font-black text-lg shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-3"
+              >
+                <i data-lucide="search" class="w-5 h-5"></i> Mulai Analisis
+              </button>
+              <button
+                onclick="switchView('methodology')"
+                class="bg-white/10 hover:bg-white/20 border-2 border-white/40 text-white px-8 py-4 rounded-2xl font-bold text-lg backdrop-blur-md transition-all flex items-center justify-center gap-2"
+              >
+                <i data-lucide="book-open" class="w-5 h-5"></i> Metodologi
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 mb-20">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col items-center text-center">
+              <div class="mb-3 bg-emerald-50 p-3 rounded-2xl"><i data-lucide="bar-chart-3" class="w-6 h-6 text-emerald-600"></i></div>
+              <h3 class="text-3xl font-extrabold text-slate-900 mb-1">6</h3>
+              <p class="text-xs text-slate-500 font-bold uppercase">Emiten Dianalisis</p>
+            </div>
+            <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col items-center text-center">
+              <div class="mb-3 bg-emerald-50 p-3 rounded-2xl"><i data-lucide="check-circle" class="w-6 h-6 text-emerald-600"></i></div>
+              <h3 class="text-3xl font-extrabold text-slate-900 mb-1">150+</h3>
+              <p class="text-xs text-slate-500 font-bold uppercase">Klaim Diverifikasi</p>
+            </div>
+            <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col items-center text-center">
+              <div class="mb-3 bg-emerald-50 p-3 rounded-2xl"><i data-lucide="activity" class="w-6 h-6 text-emerald-600"></i></div>
+              <h3 class="text-3xl font-extrabold text-slate-900 mb-1">41%</h3>
+              <p class="text-xs text-slate-500 font-bold uppercase">Rata-rata Gap CSR</p>
+            </div>
+            <div class="bg-white rounded-3xl shadow-xl p-6 flex flex-col items-center text-center">
+              <div class="mb-3 bg-red-50 p-3 rounded-2xl"><i data-lucide="alert-triangle" class="w-6 h-6 text-red-500"></i></div>
+              <h3 class="text-3xl font-extrabold text-slate-900 mb-1">3</h3>
+              <p class="text-xs text-slate-500 font-bold uppercase">Indikasi Greenwashing</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: SEARCH / DIRECTORY -->
+      <div id="view-search" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-10 flex flex-col md:flex-row gap-6 items-center justify-between">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-950 mb-2">Direktori Emiten Syariah</h2>
+            <p class="text-slate-500">Pilih emiten (ISSI) untuk melihat skor integritas ESG & Tautan Laporan Resmi IDX.</p>
+          </div>
+          <div class="flex gap-3 w-full md:w-auto">
+            <input
+              type="text"
+              id="search-input"
+              oninput="filterIssuers()"
+              placeholder="Cari kode saham (mis: TINS, PTBA)..."
+              class="w-full md:w-72 px-4 py-3.5 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 bg-white shadow-sm"
+            />
+          </div>
+        </div>
+        <div id="issuers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- VIEW: DASHBOARD DETAIL -->
+      <div id="view-dashboard" class="view-section hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <button onclick="switchView('search')" class="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white border border-slate-200 rounded-xl font-bold text-sm shadow-sm">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Pencarian
+        </button>
+
+        <div id="dashboard-header" class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-100 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+          <!-- Populated via JS -->
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl">
+            <p class="text-sm font-bold text-slate-500 uppercase mb-2">Indeks Integritas</p>
+            <div class="flex items-end gap-2">
+              <span id="dash-score" class="text-6xl font-black tracking-tighter text-emerald-500">0</span>
+              <span class="text-xl text-slate-300 font-bold mb-1.5">/100</span>
+            </div>
+          </div>
+          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl flex flex-col justify-between">
+            <p class="text-sm font-bold text-slate-500 uppercase mb-2">Risiko Greenwashing</p>
+            <div id="dash-risk-badge" class="mt-2"></div>
+          </div>
+          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl">
+            <p class="text-sm font-bold text-slate-500 uppercase mb-2">ROE vs Sektor</p>
+            <div class="flex items-end gap-3 mt-1">
+              <span id="dash-roe" class="text-4xl font-black text-slate-900">0%</span>
+              <span class="text-xs font-black text-amber-700 bg-amber-100 px-3 py-1 rounded-xl mb-2">vs avg 15.0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm mb-8">
+          <h3 class="text-xl font-bold text-slate-900 mb-6">Integritas Historis (5 Tahun Terakhir)</h3>
+          <div class="h-[320px] w-full"><canvas id="historyChart"></canvas></div>
+        </div>
+
+        <!-- CWLS Simulator Section -->
+        <div class="bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 rounded-3xl p-8 text-white shadow-2xl mb-8">
+          <h3 class="text-2xl font-bold mb-2 flex items-center gap-3"><i data-lucide="trending-up" class="text-emerald-400"></i> Simulasi Reorientasi CWLS</h3>
+          <p class="text-blue-200 text-sm mb-6">Solusi produktif untuk sisa anggaran (Gap) CSR Emiten agar tersalurkan via Cash Waqf Linked Sukuk.</p>
+          <div class="grid lg:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-blue-200 mb-2">Total Anggaran CSR: <span id="sim-budget-val" class="text-emerald-300 font-bold">Rp 50 Miliar</span></label>
+                <input type="range" id="sim-budget" min="10000000000" max="200000000000" step="5000000000" value="50000000000" oninput="updateCWLSSim()" class="w-full accent-emerald-400" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-blue-200 mb-2">Persentase Dialihkan ke CWLS: <span id="sim-pct-val" class="text-emerald-300 font-bold">30%</span></label>
+                <input type="range" id="sim-pct" min="0" max="100" step="5" value="30" oninput="updateCWLSSim()" class="w-full accent-emerald-400" />
+              </div>
+            </div>
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col justify-center space-y-3">
+              <div>
+                <p class="text-xs text-blue-300">Dana Dialihkan</p>
+                <p id="sim-res-diverted" class="text-xl font-bold">Rp 15 Miliar</p>
+              </div>
+              <div>
+                <p class="text-xs text-emerald-300">Estimasi Imbal Hasil Wakaf (6% p.a)</p>
+                <p id="sim-res-yield" class="text-2xl font-black text-emerald-400">+Rp 900 Juta/thn</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claims & Budget Table -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden p-6 md:p-8">
+          <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><i data-lucide="file-text" class="text-emerald-600"></i> Verifikasi Bukti Klaim Laporan</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm" id="claims-table">
+              <thead class="text-slate-400 font-bold uppercase text-xs border-b border-slate-100">
+                <tr>
+                  <th class="pb-3 px-4">Klaim (Laporan)</th>
+                  <th class="pb-3 px-4">Kategori</th>
+                  <th class="pb-3 px-4">Status</th>
+                  <th class="pb-3 px-4">Tautan Dokumen</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: METHODOLOGY -->
+      <div id="view-methodology" class="view-section hidden max-w-4xl mx-auto px-4 py-16">
+        <div class="mb-12 text-center">
+          <h2 class="text-3xl font-extrabold text-blue-950 mb-4">Metodologi Green Detector Syariah</h2>
+          <p class="text-slate-500 text-lg">Bagaimana kami menghitung indeks integritas dan mendeteksi anomali ESG.</p>
+        </div>
+        <div class="space-y-6">
+          <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Sumber Data & Regulasi</h3>
+            <p class="text-slate-600 leading-relaxed mb-4">
+              Analisis bersumber dari Laporan Keberlanjutan & Tahunan (2025-2026) emiten terdaftar di Bursa Efek Indonesia (IDX), berpedoman pada POJK No. 51/2017 serta Fatwa DSN-MUI No. 131/2019.
+            </p>
+          </div>
+          <div class="bg-slate-900 p-8 rounded-3xl shadow-2xl text-slate-300 font-mono text-sm">
+            <p class="text-emerald-400 font-bold mb-2">// Formula Indeks Integritas:</p>
+            <p>Indeks_Integritas = (Skor_Konten + Skor_Gap_Klaim + Skor_Gap_Anggaran) / 3</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-slate-950 py-12 mt-auto border-t border-slate-900 text-white text-center">
+      <p class="text-xs text-slate-400">Green Detector Syariah &copy; 2026 &mdash; Tim Bocii KTI, UIN Syarif Hidayatullah Jakarta</p>
+    </footer>
+
+    <script>
+      const MOCK_ISSUERS = [
+        {
+          id: "TINS",
+          name: "PT Timah Tbk",
+          sector: "Pertambangan",
+          status: "Terverifikasi",
+          score: 45,
+          risk: "Tinggi",
+          roe: 12.5,
+          reportUrl: "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_EREP/202604/a4386638a7_59c7abf50a.pdf",
+          history: [38, 35, 40, 42, 45],
+          claims: [
+            { claim: "Menurunkan emisi karbon 30%", category: "Sin of No Proof", status: "Tidak Terverifikasi", refUrl: "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_EREP/202604/a4386638a7_59c7abf50a.pdf" },
+            { claim: "Sertifikasi ISO 14001", category: "Valid", status: "Terverifikasi Penuh", refUrl: "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_EREP/202604/a4386638a7_59c7abf50a.pdf" },
+          ],
+        },
+        {
+          id: "PTBA",
+          name: "PT Bukit Asam Tbk",
+          sector: "Pertambangan",
+          status: "Terverifikasi",
+          score: 78,
+          risk: "Rendah",
+          roe: 21.0,
+          reportUrl: "https://www.ptba.co.id/api/storage/1780397923836-db4ccb5e-d835-4196-932d-2dabbba28b83.pdf",
+          history: [65, 68, 72, 75, 78],
+          claims: [{ claim: "Rehabilitasi DAS 10.000 Ha", category: "Valid", status: "Terverifikasi Penuh", refUrl: "https://www.ptba.co.id/api/storage/1780397923836-db4ccb5e-d835-4196-932d-2dabbba28b83.pdf" }],
+        },
+        {
+          id: "ADRO",
+          name: "PT Adaro Energy Indonesia Tbk",
+          sector: "Energi",
+          status: "Terverifikasi",
+          score: 82,
+          risk: "Rendah",
+          roe: 25.4,
+          reportUrl: "https://adaroindonesia.com/app/webroot/upload/files/Laporan%20Tahunan/AADI%20Annual%20Report%202025.pdf",
+          history: [70, 74, 76, 80, 82],
+          claims: [{ claim: "Pemberdayaan UMKM Adaro Ignite", category: "Valid", status: "Terverifikasi Penuh", refUrl: "https://adaroindonesia.com/app/webroot/upload/files/Laporan%20Tahunan/AADI%20Annual%20Report%202025.pdf" }],
+        },
+        { id: "SMGR", name: "PT Semen Indonesia (Persero) Tbk", sector: "Manufaktur", status: "Terverifikasi", score: 58, risk: "Sedang", roe: 8.5, reportUrl: "#", history: [62, 60, 61, 59, 58], claims: [] },
+        { id: "ANTM", name: "PT Aneka Tambang Tbk", sector: "Pertambangan", status: "Terverifikasi", score: 71, risk: "Rendah", roe: 16.5, reportUrl: "#", history: [60, 63, 66, 69, 71], claims: [] },
+        { id: "KLBF", name: "PT Kalbe Farma Tbk", sector: "Kesehatan", status: "Belum Dianalisis", score: null, risk: null, roe: null },
+      ];
+
+      let currentActiveView = "home";
+      let chartInstance = null;
+
+      function switchView(viewId) {
+        document.querySelectorAll(".view-section").forEach((el) => el.classList.add("hidden"));
+        document.getElementById("view-" + viewId).classList.remove("hidden");
+        currentActiveView = viewId;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (viewId === "search") renderIssuers(MOCK_ISSUERS);
+      }
+
+      function setUserMode(mode) {
+        ["Ritel", "Analis", "Regulator"].forEach((m) => {
+          const btn = document.getElementById("mode-" + m.toLowerCase());
+          if (btn) btn.className = m === mode ? "px-3 py-1.5 text-xs font-bold rounded-xl bg-blue-900 text-white shadow-md" : "px-3 py-1.5 text-xs font-bold rounded-xl text-slate-600";
+        });
+      }
+
+      function renderIssuers(data) {
+        const grid = document.getElementById("issuers-grid");
+        grid.innerHTML = data
+          .map(
+            (i) => `
+                <div onclick="selectIssuer('${i.id}')" class="bg-white rounded-3xl border ${i.status === "Terverifikasi" ? "border-slate-200 hover:border-emerald-500 cursor-pointer shadow-sm hover:shadow-xl" : "border-slate-100 opacity-60"} p-6 transition-all">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-950 text-white rounded-2xl flex items-center justify-center font-bold text-xl">${i.id}</div>
+                        <div><h3 class="font-bold text-slate-900">${i.name}</h3><p class="text-xs text-slate-500">${i.sector}</p></div>
+                    </div>
+                    ${
+                      i.status === "Terverifikasi"
+                        ? `
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div><span class="text-xs text-slate-400 block font-bold">Skor Integritas</span><p class="text-2xl font-black ${i.score < 50 ? "text-red-500" : "text-emerald-500"}">${i.score}/100</p></div>
+                            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><i data-lucide="chevron-right"></i></div>
+                        </div>`
+                        : `<div class="pt-4 border-t border-slate-100 text-xs text-slate-400 flex items-center gap-1 font-medium"><i data-lucide="lock" class="w-3.5 h-3.5"></i> Belum Dianalisis</div>`
+                    }
+                </div>
+            `,
+          )
+          .join("");
+        lucide.createIcons();
+      }
+
+      function filterIssuers() {
+        const query = document.getElementById("search-input").value.toLowerCase();
+        const filtered = MOCK_ISSUERS.filter((i) => i.name.toLowerCase().includes(query) || i.id.toLowerCase().includes(query));
+        renderIssuers(filtered);
+      }
+
+      function selectIssuer(id) {
+        const issuer = MOCK_ISSUERS.find((i) => i.id === id);
+        if (!issuer || issuer.status !== "Terverifikasi") return;
+
+        document.getElementById("dashboard-header").innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-blue-950 text-white rounded-2xl flex items-center justify-center font-black text-2xl">${issuer.id}</div>
+                    <div>
+                        <h1 class="text-2xl font-black text-slate-900">${issuer.name}</h1>
+                        <p class="text-sm text-slate-500">${issuer.sector} • <a href="${issuer.reportUrl}" target="_blank" class="text-blue-600 underline font-semibold">Buka Laporan Resmi (PDF)</a></p>
+                    </div>
+                </div>
+            `;
+        document.getElementById("dash-score").innerText = issuer.score;
+        document.getElementById("dash-risk-badge").innerHTML =
+          `<span class="px-4 py-2 rounded-xl text-lg font-black ${issuer.risk === "Tinggi" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"}">${issuer.risk.toUpperCase()}</span>`;
+        document.getElementById("dash-roe").innerText = issuer.roe + "%";
+
+        // Claims Table
+        const tbody = document.querySelector("#claims-table tbody");
+        tbody.innerHTML = issuer.claims.length
+          ? issuer.claims
+              .map(
+                (c) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-bold text-slate-800">${c.claim}</td>
+                    <td class="py-3 px-4 text-slate-600">${c.category}</td>
+                    <td class="py-3 px-4"><span class="px-3 py-1 rounded-xl text-xs font-black bg-emerald-100 text-emerald-800">${c.status}</span></td>
+                    <td class="py-3 px-4"><a href="${c.refUrl}" target="_blank" class="text-blue-600 text-xs font-bold underline">Lihat Dokumen</a></td>
+                </tr>
+            `,
+              )
+              .join("")
+          : `<tr><td colspan="4" class="text-center py-6 text-slate-400">Tidak ada data klaim terinci.</td></tr>`;
+
+        switchView("dashboard");
+        renderHistoryChart(issuer.history);
+      }
+
+      function renderHistoryChart(historyData) {
+        const ctx = document.getElementById("historyChart").getContext("2d");
+        if (chartInstance) chartInstance.destroy();
+        chartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["2019", "2020", "2021", "2022", "2023"],
+            datasets: [
+              {
+                label: "Skor Integritas ESG",
+                data: historyData,
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } },
+        });
+      }
+
+      function updateCWLSSim() {
+        const budget = Number(document.getElementById("sim-budget").value);
+        const pct = Number(document.getElementById("sim-pct").value);
+        document.getElementById("sim-budget-val").innerText = "Rp " + (budget / 1e9).toFixed(0) + " Miliar";
+        document.getElementById("sim-pct-val").innerText = pct + "%";
+        const diverted = budget * (pct / 100);
+        const yieldEst = diverted * 0.06;
+        document.getElementById("sim-res-diverted").innerText = "Rp " + (diverted / 1e9).toFixed(1) + " Miliar";
+        document.getElementById("sim-res-yield").innerText = "+Rp " + (yieldEst / 1e6).toFixed(0) + " Juta/thn";
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        lucide.createIcons();
+        renderIssuers(MOCK_ISSUERS);
+      });
+    </script>
+  </body>
+</html>
